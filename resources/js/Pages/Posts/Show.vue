@@ -7,6 +7,13 @@ defineProps({
         type: Object,
     },
 });
+function destroy() {
+    if (confirm("Are you sure?")) {
+        return true;
+    } else {
+        return false;
+    }
+}
 </script>
 
 <template>
@@ -20,6 +27,13 @@ defineProps({
                 >
                     Post Show
                 </h2>
+                <Link
+                    :href="route('posts.destroy', post.id)"
+                    method="delete"
+                    :onBefore="destroy"
+                    class="shadow-md bg-white rounded-xl px-4 mx-4"
+                    >削除</Link
+                >
                 <Link
                     :href="route('posts.edit', post.id)"
                     class="shadow-md bg-white rounded-xl px-4 mx-4"
