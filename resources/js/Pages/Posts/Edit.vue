@@ -14,9 +14,9 @@ const props = defineProps({
 });
 
 const form = useForm({
-    title: props.post.title,
-    excerpt: props.post.excerpt,
-    body: props.post.body,
+    title: props.post ? props.post.title : "",
+    excerpt: props.post ? props.post.excerpt : "",
+    body: props.post ? props.post.body : "",
 });
 </script>
 
@@ -33,7 +33,11 @@ const form = useForm({
                 </h2>
 
                 <Link
-                    :href="route('posts.show', post.id)"
+                    :href="
+                        post
+                            ? route('posts.show', post.id)
+                            : route('posts.index')
+                    "
                     class="shadow-md bg-white rounded-xl px-4 mx-4"
                     >戻る</Link
                 >
@@ -46,7 +50,9 @@ const form = useForm({
                     <div class="flex flex-col">
                         <form
                             @submit.prevent="
-                                form.patch(route('posts.update', post))
+                                post
+                                    ? form.patch(route('posts.update', post))
+                                    : form.post(route('posts.store'))
                             "
                             class="mt-6 space-y-6"
                         >

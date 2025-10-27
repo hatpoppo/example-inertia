@@ -7,6 +7,8 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 
 class PostController extends Controller
 {
@@ -23,17 +25,21 @@ class PostController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Posts/Edit', [
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request):RedirectResponse
     {
-        //
+        $post = new Post;
+        $post->fill($request->validated());
+        $post->save();
+        return Redirect::route('posts.index');
     }
 
     /**
