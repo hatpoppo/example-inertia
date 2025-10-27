@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Posts" />
+    <Head title="Post Show" />
 
     <AuthenticatedLayout>
         <template #header>
