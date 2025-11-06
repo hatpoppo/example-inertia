@@ -1,12 +1,20 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
-import TextArea from "@/Components/TextArea.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-
+import {
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm as useValidateForm } from "vee-validate";
+import * as z from "zod";
 const props = defineProps({
     post: {
         type: Object,
@@ -14,9 +22,34 @@ const props = defineProps({
 });
 
 const form = useForm({
-    title: props.post ? props.post.title : "",
-    excerpt: props.post ? props.post.excerpt : "",
-    body: props.post ? props.post.body : "",
+    title: "",
+    excerpt: "",
+    body: "",
+});
+
+const formSchema = toTypedSchema(
+    z.object({
+        title: z.string().min(1, { message: "必須です" }),
+        excerpt: z.string().min(1, { message: "必須です" }).max(160, {
+            message: "１６０文字以内です",
+        }),
+        body: z.string().min(1, { message: "必須です" }),
+    })
+);
+
+const { handleSubmit } = useValidateForm({
+    validationSchema: formSchema,
+    initialValues: {
+        title: props.post ? props.post.title : "",
+        excerpt: props.post ? props.post.excerpt : "",
+        body: props.post ? props.post.body : "",
+    },
+});
+const onSubmit = handleSubmit((values) => {
+    Object.assign(form, values);
+    props.post
+        ? form.patch(route("posts.update", props.post))
+        : form.post(route("posts.store"));
 });
 </script>
 
@@ -48,68 +81,57 @@ const form = useForm({
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                     <div class="flex flex-col">
-                        <form
-                            @submit.prevent="
-                                post
-                                    ? form.patch(route('posts.update', post))
-                                    : form.post(route('posts.store'))
-                            "
-                            class="mt-6 space-y-6"
-                        >
-                            <div>
-                                <InputLabel for="title" value="title" />
-
-                                <TextInput
-                                    id="title"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.title"
-                                    required
-                                    autofocus
-                                    autocomplete="title"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.title"
-                                />
-                            </div>
-
-                            <div>
-                                <InputLabel for="excerpt" value="excerpt" />
-
-                                <TextArea
-                                    id="excerpt"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.excerpt"
-                                    required
-                                    autocomplete="username"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.excerpt"
-                                />
-                            </div>
-                            <div>
-                                <InputLabel for="body" value="body" />
-
-                                <TextArea
-                                    id="body"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.body"
-                                    required
-                                    autocomplete="username"
-                                    rows="8"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.body"
-                                />
-                            </div>
+                        <form @submit="onSubmit" class="mt-6 space-y-6">
+                            <FormField v-slot="{ componentField }" name="title">
+                                <FormItem>
+                                    <FormLabel>タイトル</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="text"
+                                            placeholder="タイトル"
+                                            v-bind="componentField"
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        タイトルを入力してください
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            </FormField>
+                            <FormField
+                                v-slot="{ componentField }"
+                                name="excerpt"
+                            >
+                                <FormItem>
+                                    <FormLabel>抜粋</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="抜粋"
+                                            v-bind="componentField"
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        抜粋を入力してください
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            </FormField>
+                            <FormField v-slot="{ componentField }" name="body">
+                                <FormItem>
+                                    <FormLabel>本文</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="本文"
+                                            class="w-full"
+                                            v-bind="componentField"
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        本文を入力してください
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            </FormField>
 
                             <div class="flex items-center gap-4">
                                 <PrimaryButton :disabled="form.processing"
