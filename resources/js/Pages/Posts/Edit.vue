@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import {
     FormControl,
     FormDescription,
@@ -21,10 +21,12 @@ const props = defineProps({
     },
 });
 
+const page = usePage();
 const form = useForm({
     title: "",
     excerpt: "",
     body: "",
+    user_id: props.post ? props.post.user_id : page.props.auth.user.id,
 });
 
 const formSchema = toTypedSchema(

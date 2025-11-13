@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
@@ -15,10 +16,10 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Posts/Index', [
-            'posts' => Post::latest()->paginate(10),
+            'posts' => $request->user()->posts()->latest()->paginate(10),
         ]);
     }
 
