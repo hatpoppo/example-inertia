@@ -54,6 +54,7 @@ const d = defineProps({
                                 <TableHead class="w-[200px]">
                                     タイトル
                                 </TableHead>
+                                <TableHead class="w-[140px]"> 作者 </TableHead>
                                 <TableHead>抜粋</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -66,6 +67,7 @@ const d = defineProps({
                                         >{{ post.title }}</Link
                                     ></TableCell
                                 >
+                                <TableCell>{{ post.user.name }}</TableCell>
                                 <TableCell>{{ post.excerpt }}</TableCell>
                             </TableRow>
                         </TableBody>
