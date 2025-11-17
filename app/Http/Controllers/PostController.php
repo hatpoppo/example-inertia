@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
@@ -18,9 +19,15 @@ class PostController extends Controller
      */
     public function index(Request $request): Response
     {
+        if  ($request->user_id !== null){
+            $posts = Post::with('user')->where('user_id',$request->user_id)->latest()->paginate(10);
+        }else{
+            $posts = Post::with('user')->latest()->paginate(10);
+        }
         return Inertia::render('Posts/Index', [
-            'posts' => Post::with('user')->latest()->paginate(10),
-            // 'posts' => $request->user()->posts()->with('user')->latest()->paginate(10),
+            'posts' => $posts,
+            'users' => User::get(),
+            'selected_user_id' => $request->user_id,
         ]);
     }
 
