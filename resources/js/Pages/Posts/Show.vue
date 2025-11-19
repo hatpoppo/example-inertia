@@ -1,11 +1,19 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Star } from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
 
-defineProps({
+const d = defineProps({
     post: {
         type: Object,
     },
+    isFavourite: {
+        type: Boolean,
+    },
+});
+const form = useForm({
+    post_id: d.post.id,
 });
 function destroy() {
     if (confirm("Are you sure?")) {
@@ -51,6 +59,28 @@ function destroy() {
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                     <div class="flex flex-col">
+                        <form
+                            class="mb-4"
+                            v-if="isFavourite"
+                            @submit.prevent="
+                                form.delete(route('favorite.destroy', post.id))
+                            "
+                        >
+                            <Button variant="outline" size="lg">
+                                <Star fill="yellow" strokeWidth="{1}" />
+                            </Button>
+                        </form>
+                        <form
+                            class="mb-4"
+                            v-else
+                            @submit.prevent="
+                                form.post(route('favorite.store', post.id))
+                            "
+                        >
+                            <Button variant="secondary" size="lg">
+                                <Star fill="white" strokeWidth="{1}" />
+                            </Button>
+                        </form>
                         <h2 class="text-2xl underline font-semibold bg-white">
                             タイトル
                         </h2>

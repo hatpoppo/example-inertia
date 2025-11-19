@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\FavoriteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('posts', PostController::class);
+    Route::post('/favorites/{post_id}', [FavoriteController::class, 'store'])->name('favorite.store');
+    Route::delete('/favorites/{post_id}', [FavoriteController::class, 'destroy'])->name('favorite.destroy');
 });
 
 require __DIR__.'/auth.php';

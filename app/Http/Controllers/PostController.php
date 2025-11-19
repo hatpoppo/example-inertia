@@ -11,6 +11,7 @@ use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -58,6 +59,7 @@ class PostController extends Controller
     {
         return Inertia::render('Posts/Show', [
             'post' => $post,
+            'isFavourite' => Auth::user()->favorite_posts()->where('post_id', $post->id)->exists(),
         ]);
     }
 
