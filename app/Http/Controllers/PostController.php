@@ -21,9 +21,9 @@ class PostController extends Controller
     public function index(Request $request): Response
     {
         if  ($request->user_id !== null){
-            $posts = Post::with('user')->where('user_id',$request->user_id)->latest()->paginate(10);
+            $posts = Post::with('user', 'favorite_users')->where('user_id',$request->user_id)->latest()->paginate(10);
         }else{
-            $posts = Post::with('user')->latest()->paginate(10);
+            $posts = Post::with('user', 'favorite_users')->latest()->paginate(10);
         }
         return Inertia::render('Posts/Index', [
             'posts' => $posts,

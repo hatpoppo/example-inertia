@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import {
     Pagination,
     PaginationContent,
@@ -33,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { computed, ref, watch } from "vue";
+import { Star } from "lucide-vue-next";
 const d = defineProps({
     posts: {
         type: Object,
@@ -44,6 +45,7 @@ const d = defineProps({
         type: String,
     },
 });
+const page = usePage();
 const selectedUser = ref({});
 const usersList = d.users.map((user) => ({ value: user.id, label: user.name }));
 usersList.unshift({ value: "", label: "Not Selected" });
@@ -64,6 +66,12 @@ const nextPreviousLink = computed(() => (url) => {
     if (selectedUserValue) url += "&user_id=" + selectedUserValue.value;
     return url;
 });
+const isFavorite = (favorite_users) => {
+    const d = favorite_users.find(
+        (user) => user.id === page.props.auth.user.id
+    );
+    return d !== null && typeof d === "object" ? true : false;
+};
 watch(selectedUser, (selectedUser) => {
     form.user_id = selectedUser.value;
     form.get(route("posts.index"));
@@ -147,6 +155,9 @@ watch(selectedUser, (selectedUser) => {
                                 <TableHead class="w-[200px]">
                                     タイトル
                                 </TableHead>
+                                <TableHead class="w-[100px] text-center">
+                                    お気に入り
+                                </TableHead>
                                 <TableHead class="w-[140px]"> 作者 </TableHead>
                                 <TableHead>抜粋</TableHead>
                             </TableRow>
@@ -160,6 +171,19 @@ watch(selectedUser, (selectedUser) => {
                                         >{{ post.title }}</Link
                                     ></TableCell
                                 >
+                                <TableCell
+                                    v-if="isFavorite(post.favorite_users)"
+                                    ><Star
+                                        fill="yellow"
+                                        strokeWidth="{1}"
+                                        class="m-auto"
+                                /></TableCell>
+                                <TableCell v-else
+                                    ><Star
+                                        fill="white"
+                                        strokeWidth="{1}"
+                                        class="m-auto"
+                                /></TableCell>
                                 <TableCell>{{ post.user.name }}</TableCell>
                                 <TableCell>{{ post.excerpt }}</TableCell>
                             </TableRow>
