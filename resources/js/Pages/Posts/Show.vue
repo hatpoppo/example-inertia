@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import { Star } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
+import CommentsEdit from "@/Pages/Posts/Comments/Edit.vue";
 
 const d = defineProps({
     post: {
@@ -10,6 +11,9 @@ const d = defineProps({
     },
     isFavourite: {
         type: Boolean,
+    },
+    comments: {
+        type: Array,
     },
 });
 const form = useForm({
@@ -105,5 +109,8 @@ function destroy() {
                 </div>
             </div>
         </div>
+        <template #sub>
+            <CommentsEdit :post="post" :comments="comments" />
+        </template>
     </AuthenticatedLayout>
 </template>

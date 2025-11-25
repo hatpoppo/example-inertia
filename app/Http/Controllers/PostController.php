@@ -6,6 +6,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Comment;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
@@ -60,6 +61,7 @@ class PostController extends Controller
         return Inertia::render('Posts/Show', [
             'post' => $post,
             'isFavourite' => Auth::user()->favorite_posts()->where('post_id', $post->id)->exists(),
+            'comments' => Comment::where('post_id',$post->id)->with(['user'])->latest()->get(),
         ]);
     }
 

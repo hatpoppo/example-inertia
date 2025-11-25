@@ -191,6 +191,7 @@ const showingNavigationDropdown = ref(false);
             <!-- Page Content -->
             <main>
                 <slot />
+                <slot name="sub" />
             </main>
         </div>
     </div>
