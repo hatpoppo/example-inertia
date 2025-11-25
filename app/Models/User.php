@@ -40,6 +40,11 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function favorite_posts(): BelongsToMany
     {
         return $this->belongsToMany(Post::class)->withTimestamps();
