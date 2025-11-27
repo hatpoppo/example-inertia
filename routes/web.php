@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\TagController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('posts', PostController::class);
+    Route::resource('tags', TagController::class)->except(['create', 'edit', 'show']);
     Route::post('/favorites/{post_id}', [FavoriteController::class, 'store'])->name('favorite.store');
     Route::delete('/favorites/{post_id}', [FavoriteController::class, 'destroy'])->name('favorite.destroy');
     Route::resource('posts.comments', CommentController::class)->only(['store']);

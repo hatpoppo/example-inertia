@@ -80,6 +80,11 @@ const showingNavigationDropdown = ref(false);
                                             Psots
                                         </DropdownLink>
                                         <DropdownLink
+                                            :href="route('tags.index')"
+                                        >
+                                            Tags
+                                        </DropdownLink>
+                                        <DropdownLink
                                             :href="route('logout')"
                                             method="post"
                                             as="button"
@@ -168,6 +173,9 @@ const showingNavigationDropdown = ref(false);
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('posts.index')">
                                 Psots
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('tags.index')">
+                                Tags
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('logout')"
