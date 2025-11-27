@@ -45,7 +45,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePostRequest $request):RedirectResponse
+    public function store(StorePostRequest $request): RedirectResponse
     {
         $post = new Post;
         $post->fill($request->validated());
@@ -90,7 +90,7 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post):RedirectResponse
+    public function destroy(Post $post): RedirectResponse
     {
         $post->delete();
         return Redirect::route('posts.index');

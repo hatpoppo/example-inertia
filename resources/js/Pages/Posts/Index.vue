@@ -18,7 +18,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Check, ChevronsUpDown, Search } from "lucide-vue-next";
+import { Check, ChevronsUpDown, Search, Star } from "lucide-vue-next";
 import {
     Combobox,
     ComboboxAnchor,
@@ -33,7 +33,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { computed, ref, watch } from "vue";
-import { Star } from "lucide-vue-next";
 const d = defineProps({
     posts: {
         type: Object,
