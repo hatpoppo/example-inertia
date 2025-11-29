@@ -1,8 +1,9 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import { Star } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import CommentsEdit from "@/Pages/Posts/Comments/Edit.vue";
 
 const d = defineProps({
@@ -15,7 +16,14 @@ const d = defineProps({
     comments: {
         type: Array,
     },
+    tags: {
+        type: Array,
+    },
 });
+const page = usePage();
+const configuredTags = d.tags.filter(
+    (item) => item.user_id === page.props.auth.user.id
+);
 const form = useForm({
     post_id: d.post.id,
 });
@@ -85,6 +93,16 @@ function destroy() {
                                 <Star fill="white" strokeWidth="{1}" />
                             </Button>
                         </form>
+                        <h2 class="text-2xl underline font-semibold bg-white">
+                            タグ
+                        </h2>
+                        <h3 class="shadow-md rounded-xl p-4 mb-4 flex gap-6">
+                            <Badge
+                                v-for="tag in configuredTags"
+                                :key="tag.id"
+                                >{{ tag.name }}</Badge
+                            >
+                        </h3>
                         <h2 class="text-2xl underline font-semibold bg-white">
                             タイトル
                         </h2>

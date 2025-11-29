@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -36,9 +37,10 @@ class PostController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         return Inertia::render('Posts/Edit', [
+            'tags' => $request->user()->tags,
         ]);
     }
 
@@ -47,9 +49,12 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request): RedirectResponse
     {
-        $post = new Post;
-        $post->fill($request->validated());
-        $post->save();
+        DB::transaction(function () use ($request) {
+            $post = new Post;
+            $post->fill($request->validated());
+            $post->save();
+            $post->tags()->sync($request->tags);
+        });
         return Redirect::route('posts.index');
     }
 
@@ -62,6 +67,7 @@ class PostController extends Controller
             'post' => $post,
             'isFavourite' => Auth::user()->favorite_posts()->where('post_id', $post->id)->exists(),
             'comments' => Comment::where('post_id',$post->id)->with(['user'])->latest()->get(),
+            'tags' => $post->tags,
         ]);
     }
 
@@ -70,21 +76,24 @@ class PostController extends Controller
      */
     public function edit(Post $post): Response
     {
+        $post->tags;
         return Inertia::render('Posts/Edit', [
             'post' => $post,
+            'tags' => Auth::user()->tags,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePostRequest $request, Post $post): Response
+    public function update(UpdatePostRequest $request, Post $post): RedirectResponse
     {
-        $post->fill($request->validated());
-        $post->save();
-        return Inertia::render('Posts/Show', [
-            'post' => $post,
-        ]);
+        DB::transaction(function () use ($request, $post) {
+            $post->fill($request->validated());
+            $post->save();
+            $post->tags()->sync($request->tags);
+        });
+        return Redirect::route('posts.show', $post);
     }
 
     /**

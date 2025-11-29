@@ -12,12 +12,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxGroupRoot } from "reka-ui";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm as useValidateForm } from "vee-validate";
 import * as z from "zod";
 const props = defineProps({
     post: {
         type: Object,
+    },
+    tags: {
+        type: Array,
     },
 });
 
@@ -27,6 +33,7 @@ const form = useForm({
     excerpt: "",
     body: "",
     user_id: props.post ? props.post.user_id : page.props.auth.user.id,
+    tags: props.post ? props.post.tags.map((item) => item.id) : [],
 });
 
 const formSchema = toTypedSchema(
@@ -84,6 +91,23 @@ const onSubmit = handleSubmit((values) => {
                 <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                     <div class="flex flex-col">
                         <form @submit="onSubmit" class="mt-6 space-y-6">
+                            <Label>タグ</Label>
+                            <div class="flex gap-6">
+                                <CheckboxGroupRoot
+                                    v-for="tag in tags"
+                                    :key="tag.id"
+                                    v-model="form.tags"
+                                    class="flex items-center gap-3"
+                                >
+                                    <Checkbox
+                                        :id="'tag_' + tag.id"
+                                        :value="tag.id"
+                                    />
+                                    <Label :for="'tag_' + tag.id">{{
+                                        tag.name
+                                    }}</Label>
+                                </CheckboxGroupRoot>
+                            </div>
                             <FormField v-slot="{ componentField }" name="title">
                                 <FormItem>
                                     <FormLabel>タイトル</FormLabel>
