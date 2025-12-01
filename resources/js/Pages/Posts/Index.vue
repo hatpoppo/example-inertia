@@ -31,6 +31,9 @@ import {
     ComboboxTrigger,
 } from "@/components/ui/combobox";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxGroupRoot } from "reka-ui";
 import { cn } from "@/lib/utils";
 import { computed, ref, watch } from "vue";
 const d = defineProps({
@@ -43,6 +46,12 @@ const d = defineProps({
     selected_user_id: {
         type: String,
     },
+    tags: {
+        type: Array,
+    },
+    selectedTags: {
+        type: Array,
+    },
 });
 const page = usePage();
 const selectedUser = ref({});
@@ -54,15 +63,18 @@ const selectedUserValue = usersList.find(
 if (selectedUserValue) selectedUser.value = selectedUserValue;
 const form = useForm({
     user_id: "",
+    selectedTags: d.selectedTags ? d.selectedTags : [],
 });
 const paginationLink = computed(() => (item) => {
     let url = d.posts.links.find((element) => element.page === item.value).url;
-    if (selectedUserValue) url += "&user_id=" + selectedUserValue.value;
+    let param = new URL(window.location.href);
+    url += param.search.replace("?", "&");
     return url;
 });
 const nextPreviousLink = computed(() => (url) => {
+    let param = new URL(window.location.href);
     if (!url) return undefined;
-    if (selectedUserValue) url += "&user_id=" + selectedUserValue.value;
+    url += param.search.replace("?", "&");
     return url;
 });
 const isFavorite = (favorite_users) => {
@@ -75,6 +87,12 @@ watch(selectedUser, (selectedUser) => {
     form.user_id = selectedUser.value;
     form.get(route("posts.index"));
 });
+watch(
+    () => form.selectedTags,
+    () => {
+        form.get(route("posts.index"));
+    }
+);
 </script>
 
 <template>
@@ -99,6 +117,18 @@ watch(selectedUser, (selectedUser) => {
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                    <Label>タグ</Label>
+                    <div class="shadow-md rounded-xl p-4 mb-4 flex gap-6">
+                        <CheckboxGroupRoot
+                            v-for="tag in tags"
+                            :key="tag.id"
+                            v-model="form.selectedTags"
+                            class="flex items-center gap-3"
+                        >
+                            <Checkbox :id="'tag_' + tag.id" :value="tag.id" />
+                            <Label :for="'tag_' + tag.id">{{ tag.name }}</Label>
+                        </CheckboxGroupRoot>
+                    </div>
                     <Combobox v-model="selectedUser" by="label">
                         <ComboboxAnchor as-child>
                             <ComboboxTrigger as-child>

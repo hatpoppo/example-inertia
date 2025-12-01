@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class PostController extends Controller
 {
@@ -24,6 +25,10 @@ class PostController extends Controller
     {
         if  ($request->user_id !== null){
             $posts = Post::with('user', 'favorite_users')->where('user_id',$request->user_id)->latest()->paginate(10);
+        }elseif  ($request->selectedTags !== null){
+            $posts = Post::with('user', 'favorite_users')->whereHas('tags',function (Builder $query) use ($request) { 
+                $query->where('tags.user_id', Auth::user()->id)->whereIn('tags.id',$request->selectedTags);
+            })->latest()->paginate(10);
         }else{
             $posts = Post::with('user', 'favorite_users')->latest()->paginate(10);
         }
@@ -31,6 +36,8 @@ class PostController extends Controller
             'posts' => $posts,
             'users' => User::get(),
             'selected_user_id' => $request->user_id,
+            'tags' => $request->user()->tags,
+            'selectedTags' => $request->selectedTags ? array_map('intval', $request->selectedTags) : [],
         ]);
     }
 
