@@ -35,7 +35,7 @@ class PostController extends Controller
         return Inertia::render('Posts/Index', [
             'posts' => $posts,
             'users' => User::get(),
-            'selected_user_id' => $request->user_id,
+            'selectedUserId' => $request->user_id,
             'tags' => $request->user()->tags,
             'selectedTags' => $request->selectedTags ? array_map('intval', $request->selectedTags) : [],
         ]);

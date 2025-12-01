@@ -43,7 +43,7 @@ const d = defineProps({
     users: {
         type: Object,
     },
-    selected_user_id: {
+    selectedUserId: {
         type: String,
     },
     tags: {
@@ -54,15 +54,11 @@ const d = defineProps({
     },
 });
 const page = usePage();
-const selectedUser = ref({});
 const usersList = d.users.map((user) => ({ value: user.id, label: user.name }));
-usersList.unshift({ value: "", label: "Not Selected" });
-const selectedUserValue = usersList.find(
-    (user) => user.value == d.selected_user_id
-);
-if (selectedUserValue) selectedUser.value = selectedUserValue;
+usersList.unshift({ value: 0, label: "Not Selected" });
+const selectedUser = usersList.find((user) => user.value == d.selectedUserId);
 const form = useForm({
-    user_id: "",
+    user_id: d.selectedUserId ? d.selectedUserId : "",
     selectedTags: d.selectedTags ? d.selectedTags : [],
 });
 const paginationLink = computed(() => (item) => {
@@ -83,10 +79,13 @@ const isFavorite = (favorite_users) => {
     );
     return d !== null && typeof d === "object" ? true : false;
 };
-watch(selectedUser, (selectedUser) => {
-    form.user_id = selectedUser.value;
-    form.get(route("posts.index"));
-});
+watch(
+    () => form.user_id,
+    () => {
+        if (!form.user_id) form.user_id = "";
+        form.get(route("posts.index"));
+    }
+);
 watch(
     () => form.selectedTags,
     () => {
@@ -129,7 +128,7 @@ watch(
                             <Label :for="'tag_' + tag.id">{{ tag.name }}</Label>
                         </CheckboxGroupRoot>
                     </div>
-                    <Combobox v-model="selectedUser" by="label">
+                    <Combobox v-model="form.user_id" by="label">
                         <ComboboxAnchor as-child>
                             <ComboboxTrigger as-child>
                                 <Button
@@ -165,8 +164,8 @@ watch(
                             <ComboboxGroup>
                                 <ComboboxItem
                                     v-for="user in usersList"
-                                    :key="user.value"
-                                    :value="user"
+                                    :key="user.label"
+                                    :value="user.value"
                                 >
                                     {{ user.label }}
 
